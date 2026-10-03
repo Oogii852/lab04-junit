@@ -120,4 +120,26 @@ class GradeCalculatorTest {
             () -> assertThrows(IllegalArgumentException.class, () -> calc.totalScore(10, 40, 10, 11, 30)),
             () -> assertThrows(IllegalArgumentException.class, () -> calc.totalScore(10, 40, 10, 10, 31)));
     }
+
+    @ParameterizedTest(name = "letterGrade({0}) = {1}")
+    @DisplayName("letterGrade: хязгаарын утгуудын parameterized тест")
+    @CsvSource({"95,A", "90,A", "89.99,B", "80,B", "79.99,C", "70,C", "69.99,D", "60,D", "59.99,F", "0,F", "100,A"})
+    void letterGradeBoundaries(double score, String expected) {
+        assertEquals(expected, new GradeCalculator().letterGrade(score));
+    }
+
+    @ParameterizedTest(name = "totalScore({0},{1},{2},{3},{4}) = {5}")
+    @DisplayName("totalScore: зөв нийлбэрийн parameterized тест")
+    @CsvSource({"10,40,10,10,30,100", "0,0,0,0,0,0", "8,35,7,9,25,84", "5,20,5,5,15,50"})
+    void totalScoreValues(double att, double lab, double q1, double q2, double exam, double expected) {
+        assertEquals(expected, new GradeCalculator().totalScore(att, lab, q1, q2, exam), 1e-9);
+    }
+
+    @ParameterizedTest(name = "totalScore({0},{1},{2},{3},{4}) exception")
+    @DisplayName("totalScore: буруу оролтын parameterized тест")
+    @CsvSource({"-5,40,10,10,30", "10,-1,10,10,30", "10,41,10,10,30", "11,40,10,10,30", "10,40,10,10,31"})
+    void totalScoreInvalid(double att, double lab, double q1, double q2, double exam) {
+        assertThrows(IllegalArgumentException.class,
+            () -> new GradeCalculator().totalScore(att, lab, q1, q2, exam));
+    }
 }
